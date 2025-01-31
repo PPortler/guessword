@@ -1,6 +1,7 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Image, Flex, Card, Col, Row, Space, Carousel, Typography, Button } from 'antd';
+import axios from 'axios';
 const { Text } = Typography;
 
 function Container() {
@@ -13,98 +14,28 @@ function Container() {
         background: '#364d79',
     };
 
-    const questionData = [
-        {
-            quiz: 'ไก่กับไข่อะไรเกิดก่อนกัน',
-            image: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-            choice: [
-                {
-                    descriptions: "ไก่",
-                    answer: true
-                },
-                {
-                    descriptions: "ไข่",
-                    answer: false
-                },
-                {
-                    descriptions: "พร้อมกัน",
-                    answer: false
-                },
-                {
-                    descriptions: "ไม่มีข้อถูก",
-                    answer: false
-                },
-            ]
-        },
-        {
-            quiz: 'จากภาพคือคำว่าอะไร',
-            image: 'https://png.pngtree.com/png-vector/20191023/ourmid/pngtree-question-icon-cartoon-style-png-image_1846608.jpg',
-            choice: [
-                {
-                    descriptions: "ไก่",
-                    answer: true
-                },
-                {
-                    descriptions: "ไข่",
-                    answer: false
-                },
-                {
-                    descriptions: "พร้อมกัน",
-                    answer: false
-                },
-                {
-                    descriptions: "ไม่มีข้อถูก",
-                    answer: false
-                },
-            ]
-        },
-        {
-            quiz: 'ภาพนี้มีอะไรแปลก',
-            image: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-            choice: [
-                {
-                    descriptions: "ไก่",
-                    answer: true
-                },
-                {
-                    descriptions: "ไข่",
-                    answer: false
-                },
-                {
-                    descriptions: "พร้อมกัน",
-                    answer: false
-                },
-                {
-                    descriptions: "ไม่มีข้อถูก",
-                    answer: false
-                },
-            ]
-        },
-        {
-            quiz: 'ลองทายดู',
-            image: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-            choice: [
-                {
-                    descriptions: "ไก่",
-                    answer: true
-                },
-                {
-                    descriptions: "ไข่",
-                    answer: false
-                },
-                {
-                    descriptions: "พร้อมกัน",
-                    answer: false
-                },
-                {
-                    descriptions: "ไม่มีข้อถูก",
-                    answer: false
-                },
-            ]
-        },
+    useEffect(() => {
+        getQuiz();
+    }, [])
+    const [questionData, setQuestionData] = useState([])
 
-    ]
+    const getQuiz = async () => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_PORT_API}/api/quiz`);
 
+            if (res.status === 200) {
+                setQuestionData(res.data)
+                return;
+            } else {
+                console.log('เกิดข้อผิดพลาด');
+                return;
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    console.log(questionData)
     const [status, setStatus] = useState(0)
     const [score, setScore] = useState(0)
     const [showAnswer, setShowAnswer] = useState(false)
@@ -157,22 +88,23 @@ function Container() {
                     <Row className='flex flex-col gap-2'>
                         <Col className='flex flex-col'>
                             <Text className='text-white text-lg'>ข้อ {status + 1}.</Text >
-                            <Text className='text-white'>{questionData[status]?.quiz} ?</Text>
+                            <Text className='text-white'>{questionData[status]?.title} ?</Text>
                         </Col >
                         <Image
                             width={200}
                             height={200}
                             src={questionData[status]?.image}
                         />
+                        <Text className=' text-white flex justify-end'>ผู้เขียน: {questionData[status]?.author ? questionData[status]?.author:'นิรนาม'}</Text>
                     </Row >
                     <Flex justify='center' className=' z-10 mt-14' >
                         <Flex vertical="vertical" gap={10}>
                             <Text className=' text-white flex justify-end'>คะแนน: {score}</Text>
                             <Row gutter={16}>
-                                {questionData[status]?.choice?.map((choice, index) => {
+                                {questionData[status]?.choices?.map((choice, index) => {
                                     return (
                                         <Col className={``} key={index} onClick={() => {
-                                            if(!showAnswer){
+                                            if (!showAnswer) {
                                                 selectChoice(choice?.answer)
                                             }
                                         }}>
@@ -186,7 +118,7 @@ function Container() {
                                             w-52 hover:-translate-y-2 hover:shadow-lg cursor-pointer transition-transform`
                                                 }
                                             >
-                                                {choice?.descriptions}
+                                                {choice?.choice}
                                             </Card>
                                         </Col>
                                     );

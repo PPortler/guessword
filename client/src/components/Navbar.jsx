@@ -20,8 +20,14 @@ function Navbar() {
             <Flex
                 gap='small'
             >
-                <Button type='ghost' className='text-[#9BC2B2] font-bold text-xl' onClick={() => navigate("/")}>เล่น</Button>
+                <Button type='ghost' className='text-[#9BC2B2] font-bold text-xl' onClick={() => {
+                    navigate("/")
+                    window.location.reload()
+                }}>
+                    เล่น
+                </Button>
                 <Button onClick={() => navigate("/add_quiz")}>เพิ่มคำถาม</Button>
+                <Button onClick={() => navigate("/add_quiz")}>คำถามทั้งหมด</Button>
             </Flex>
 
         </Flex>

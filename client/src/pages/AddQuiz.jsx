@@ -1,32 +1,85 @@
 import React from 'react'
 import { useState } from 'react';
-import { Button, Flex, Form, Input, Typography, Checkbox } from 'antd';
+import { Button, Flex, Form, Input, Typography, Checkbox, Image, Space } from 'antd';
 import { PlusCircleFilled } from '@ant-design/icons'
+import axios from 'axios';
 
 const { Text } = Typography;
 
 function AddQuiz() {
-  const onFinish = (values) => {
-    console.log('Success:', values);
+
+
+  const [quantityChoice, setQuantityChoice] = useState(1)
+
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [image, setImage] = useState('')
+  const [choices, setChoices] = useState([
+    {
+      choice: '',
+      answer: false,
+    }
+  ])
+
+  //manage choices
+  const handleAddChoice = () => {
+    setChoices([...choices, { choice: '', answer: false }]);
+    setQuantityChoice(quantityChoice + 1); // เพิ่มจำนวนตัวเลือกเมื่อคลิก
   };
+  const onChangeChoice = (index, field, value) => {
+    const updatedChoices = [...choices];
+    updatedChoices[index][field] = value;
+    setChoices(updatedChoices);
+  };
+
+  //Form
+  const [error, setError] = useState('')
+  const onFinish = async () => {
+    if (!title || !image || choices?.length === 1) {
+      setError('กรุณากรอกข้อมูลให้ครบและถูกต้อง !')
+      return;
+    }
+
+    if(imageError){
+      setError('ที่อยู่รูปภาพไม่ถูกต้อง !')
+      return;
+    }
+
+    let body = {
+      title: title,
+      image: image,
+      choices: choices,
+      author: author
+    }
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_PORT_API}/api/quiz/add_quiz`, body)
+
+      if (res.status === 201) {
+        console.log("บันทึกคำถามสำเร็จ")
+        window.location.reload();
+      } else {
+        console.log("เกิดข้อผิดพลาดบันทึกไม่สำเร็จ");
+      }
+
+    } catch (err) {
+      console.log(err)
+      setError('เกิดข้อผิดพลาดชื่อซ้ำ !')
+      return;
+    }
+
+  };
+
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
-  const onChange = (e) => {
-    console.log(`checked = ${e.target.checked}`);
-  };
+  //check image
+  const [imageError, setImageError] = useState(false);
 
-  const [quantityChoice, setQuantityChoice] = useState(1)
-
-  const handleAddChoice = () => {
-    setQuantityChoice(quantityChoice + 1); // เพิ่มจำนวนตัวเลือกเมื่อคลิก
-  };
-
+  console.log(image)
   return (
     <>
       <Form
-        name="basic"
         labelCol={{
           span: 8,
         }}
@@ -43,33 +96,33 @@ function AddQuiz() {
         className='max-w-96 mx-auto py-14'
       >
         <Flex justify='end' className='mb-5'>
-          <Text className='text-white text-xl '>สร้างคำถาม</Text>
+          <Text className='text-white text-xl '>สร้างคำถาม </Text>
         </Flex>
         <Form.Item
           label={
-            <span className='text-white'>ตั้งคำถาม</span>
+            <span className='text-white'>ตั้งคำถาม <span className='text-red-400'>*</span></span>
           }
-          name="username"
-          labelStyle={{ color: 'white' }}
+
           rules={[
             {
               required: true,
               message: 'กรุณาระบุคำถาม',
             },
           ]}
-
         >
           <Input
             placeholder="ลองทายภาพนี้ดูสิ ? ..."
             style={{ background: 'transparent' }}
-            className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8' />
+            className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8'
+            onChange={(e) => setTitle(e.target.value)}
+            required={true}
+          />
         </Form.Item>
         <Form.Item
           label={
-            <span className='text-white'>รูปภาพ</span>
+            <span className='text-white'>รูปภาพ <span className='text-red-400'>*</span></span>
           }
-          name="username"
-          labelStyle={{ color: 'white' }}
+
           rules={[
             {
               required: true,
@@ -80,30 +133,52 @@ function AddQuiz() {
           <Input
             placeholder="เป็น link"
             style={{ background: 'transparent' }}
-            className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8' />
+            className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8'
+            onChange={(e) => {
+              setImage(e.target.value)
+              setImageError(false)
+            }}
+            required={true}
+          />
+          {image && (
+            <Image
+              width={200}
+              height={200}
+              onError={() => setImageError(true)}
+              onLoad={() => setImageError(false)}
+              src={image}
+              className='mt-3'
+            />
+          )}
         </Form.Item>
-       
+
         {[...Array(quantityChoice)].map((_, index) => (
           <Form.Item
             label={
-              <span className='text-white'>ตัวเลือก {index+1}</span>
+              <span className='text-white'>ตัวเลือก {index + 1} <span className='text-red-400'>*</span></span>
             }
-            name="username"
-            labelStyle={{ color: 'white' }}
             rules={[
               {
                 required: true,
                 message: 'กรุณาระบุคำถาม',
               },
             ]}
+            key={index}
           >
             <Input
               placeholder="คำตอบ.."
               style={{ background: 'transparent' }}
-              className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8' />
-            <Checkbox className='mt-2 text-white' onChange={onChange}>คำตอบที่ถูก</Checkbox>
+              className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8'
+              onChange={(e) => onChangeChoice(index, 'choice', e.target.value)}
+              required={true}
+            />
+            <Checkbox
+              className='mt-2 text-white'
+              onChange={(e) => onChangeChoice(index, 'answer', e.target.checked)}>
+              คำตอบที่ถูก
+            </Checkbox>
             <PlusCircleFilled
-              style={{ display: quantityChoice !== index+1 || index === 3  ? 'none' : 'block' }}
+              style={{ display: quantityChoice !== index + 1 || index === 3 ? 'none' : 'block' }}
               onClick={handleAddChoice}
               className='text-sky-500 text-2xl cursor-pointer flex justify-center'
             />
@@ -116,22 +191,26 @@ function AddQuiz() {
           label={
             <span className='text-white'>ผู้เขียน</span>
           }
-          name="username"
-          labelStyle={{ color: 'white' }}
           rules={[
             {
               required: true,
               message: 'กรุณาระบุคำถาม',
             },
           ]}
-
+          onChange={(e) => setAuthor(e.target.value)}
         >
           <Input
             placeholder="ลองทายภาพนี้ดูสิ ? ..."
             style={{ background: 'transparent' }}
-            className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8' />
+            className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8'
+          />
         </Form.Item>
-        <Form.Item label={null} className='text-end'>
+        {error && (
+          <Flex justify='end'>
+            <Text className='text-red-400 text-xs '>* {error}</Text>
+          </Flex>
+        )}
+        <Form.Item label={null} className='text-end mt-3'>
           <Button type="primary" htmlType="submit">
             ยืนยัน
           </Button>
