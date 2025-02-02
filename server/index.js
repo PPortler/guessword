@@ -12,7 +12,6 @@ app.use(express.urlencoded({ extended: true }))
 
 mongoose.Promise = global.Promise; //ใช้สำหรับตั้งค่าระบบ Promise ที่ใช้ใน Mongoose (ไลบรารีสำหรับ MongoDB ใน Node.js) กำหนดให้ Mongoose ใช้ Promise ที่มาจาก JavaScript global แทนที่การใช้ Promise ของ Mongoose เอง
 mongoose.connect(process.env.MONGODB)
-
     .then(() => { 
         console.log('mongoDB connect')
     }).catch((err) => {

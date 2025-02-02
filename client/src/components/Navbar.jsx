@@ -27,7 +27,7 @@ function Navbar() {
                     เล่น
                 </Button>
                 <Button onClick={() => navigate("/add_quiz")}>เพิ่มคำถาม</Button>
-                <Button onClick={() => navigate("/add_quiz")}>คำถามทั้งหมด</Button>
+                <Button onClick={() => navigate("/view_quiz")}>คำถามทั้งหมด</Button>
             </Flex>
 
         </Flex>

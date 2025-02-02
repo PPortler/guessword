@@ -17,8 +17,8 @@ function Container() {
     useEffect(() => {
         getQuiz();
     }, [])
-    const [questionData, setQuestionData] = useState([])
 
+    const [questionData, setQuestionData] = useState([])
     const getQuiz = async () => {
         try {
             const res = await axios.get(`${process.env.REACT_APP_PORT_API}/api/quiz`);
@@ -35,7 +35,6 @@ function Container() {
         }
     }
 
-    console.log(questionData)
     const [status, setStatus] = useState(0)
     const [score, setScore] = useState(0)
     const [showAnswer, setShowAnswer] = useState(false)
