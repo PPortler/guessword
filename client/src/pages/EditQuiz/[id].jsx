@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { Button, Flex, Form, Input, Typography, Checkbox, Image  } from 'antd';
+import { Button, Flex, Form, Input, Typography, Checkbox, Image, message } from 'antd';
 import { PlusCircleFilled, LeftSquareFilled } from '@ant-design/icons'
 import axios from 'axios';
 import { useParams } from 'react-router-dom';  // นำเข้า useParams
@@ -61,6 +61,9 @@ function EditQuiz() {
 
     //Form
     const [error, setError] = useState('')
+    const [messageApi, contextHolder] = message.useMessage();
+    const key = 'updatable';
+
     const onFinish = async () => {
         const tempTitle = title || questionData?.title
         const tempImage = image || questionData?.image
@@ -89,14 +92,28 @@ function EditQuiz() {
 
             if (res.status === 200) {
                 console.log("บันทึกคำถามสำเร็จ");
-                navigate('/view_quiz')
+                messageApi.open({
+                    key,
+                    type: 'success',
+                    content: 'อัพเดทแล้ว!',
+                    duration: 1,
+                });
+                setTimeout(() => {
+                    navigate('/view_quiz')
+                }, 1500);
+
             } else {
                 console.log("เกิดข้อผิดพลาดบันทึกไม่สำเร็จ");
             }
 
         } catch (err) {
             console.log(err)
-            setError('เกิดข้อผิดพลาดชื่อซ้ำ !')
+            messageApi.open({
+                key,
+                type: 'error',
+                content: 'เกิดข้อผพลาดดลองใหม่ภายหลัง!',
+                duration: 1,
+            });
             return;
         }
 
@@ -111,6 +128,7 @@ function EditQuiz() {
 
     return (
         <>
+            {contextHolder}
             <Form
                 labelCol={{
                     span: 8,

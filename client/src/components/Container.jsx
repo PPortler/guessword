@@ -84,47 +84,55 @@ function Container() {
                 </>
             ) : (
                 <Space className='flex flex-col mt-24'>
-                    <Row className='flex flex-col gap-2'>
-                        <Col className='flex flex-col'>
-                            <Text className='text-white text-lg'>ข้อ {status + 1}.</Text >
-                            <Text className='text-white'>{questionData[status]?.title} ?</Text>
-                        </Col >
-                        <Image
-                            width={200}
-                            height={200}
-                            src={questionData[status]?.image}
-                        />
-                        <Text className=' text-white flex justify-end'>ผู้เขียน: {questionData[status]?.author ? questionData[status]?.author:'นิรนาม'}</Text>
-                    </Row >
-                    <Flex justify='center' className=' z-10 mt-14' >
-                        <Flex vertical="vertical" gap={10}>
-                            <Text className=' text-white flex justify-end'>คะแนน: {score}</Text>
-                            <Row gutter={16}>
-                                {questionData[status]?.choices?.map((choice, index) => {
-                                    return (
-                                        <Col className={``} key={index} onClick={() => {
-                                            if (!showAnswer) {
-                                                selectChoice(choice?.answer)
-                                            }
-                                        }}>
-                                            <Card title={
-                                                <span className={showAnswer && choice?.answer ? 'text-white' : 'text-black'}>
-                                                    ตัวเลือก {index + 1}
-                                                </span>
-                                            }
-                                                className={
-                                                    ` ${showAnswer && choice?.answer ? 'bg-green-700 text-white' : ''}
-                                            w-52 hover:-translate-y-2 hover:shadow-lg cursor-pointer transition-transform`
-                                                }
-                                            >
-                                                {choice?.choice}
-                                            </Card>
-                                        </Col>
-                                    );
-                                })}
-                            </Row>
-                        </Flex>
-                    </Flex>
+                    {questionData?.length > 1 ? (
+                        <>
+                            <Row className='flex flex-col gap-2'>
+                                <Col className='flex flex-col'>
+                                    <Text className='text-white text-lg'>ข้อ {status + 1}.</Text >
+                                    <Text className='text-white'>{questionData[status]?.title} ?</Text>
+                                </Col >
+                                <Image
+                                    width={200}
+                                    height={200}
+                                    src={questionData[status]?.image}
+                                />
+                                <Text className=' text-white flex justify-end'>ผู้เขียน: {questionData[status]?.author ? questionData[status]?.author : 'นิรนาม'}</Text>
+                            </Row >
+                            <Flex justify='center' className=' z-10 mt-14' >
+                                <Flex vertical="vertical" gap={10}>
+                                    <Text className=' text-white flex justify-end'>คะแนน: {score}/{questionData?.length}</Text>
+                                    <Row gutter={16}>
+                                        {questionData[status]?.choices?.map((choice, index) => {
+                                            return (
+                                                <Col className={``} key={index} onClick={() => {
+                                                    if (!showAnswer) {
+                                                        selectChoice(choice?.answer)
+                                                    }
+                                                }}>
+                                                    <Card title={
+                                                        <span className={showAnswer && choice?.answer ? 'text-white' : 'text-black'}>
+                                                            ตัวเลือก {index + 1}
+                                                        </span>
+                                                    }
+                                                        className={
+                                                            ` ${showAnswer && choice?.answer ? 'bg-green-700 text-white' : ''}
+                                         w-52 hover:-translate-y-2 hover:shadow-lg cursor-pointer transition-transform`
+                                                        }
+                                                    >
+                                                        {choice?.choice}
+                                                    </Card>
+                                                </Col>
+                                            );
+                                        })}
+                                    </Row>
+                                </Flex>
+                            </Flex>
+                        </>
+                    ) : (
+                        <>
+                            <Text className='text-white'>กำลังโหลด...</Text>
+                        </>
+                    )}
                 </Space >
             )
             }

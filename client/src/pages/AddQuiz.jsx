@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
-import { Button, Flex, Form, Input, Typography, Checkbox, Image, Space } from 'antd';
+import { Button, Flex, Form, Input, Typography, Checkbox, Image, message } from 'antd';
 import { PlusCircleFilled } from '@ant-design/icons'
 import axios from 'axios';
 
@@ -32,15 +32,22 @@ function AddQuiz() {
     setChoices(updatedChoices);
   };
 
+  //message
+  const [messageApi, contextHolder] = message.useMessage();
+  const key = 'updatable';
+
+
   //Form
   const [error, setError] = useState('')
   const onFinish = async () => {
+
     if (!title || !image || choices?.length === 1) {
       setError('กรุณากรอกข้อมูลให้ครบและถูกต้อง !')
+      messageApi.close()
       return;
     }
 
-    if(imageError){
+    if (imageError) {
       setError('ที่อยู่รูปภาพไม่ถูกต้อง !')
       return;
     }
@@ -51,14 +58,18 @@ function AddQuiz() {
       choices: choices,
       author: author
     }
+
+    messageApi.open({
+      key,
+      type: 'loading',
+      content: 'กำลังอัพโหลด...',
+    });
+
     try {
       const res = await axios.post(`${process.env.REACT_APP_PORT_API}/api/quiz/add_quiz`, body)
 
       if (res.status === 201) {
-        console.log("บันทึกคำถามสำเร็จ")
         window.location.reload();
-      } else {
-        console.log("เกิดข้อผิดพลาดบันทึกไม่สำเร็จ");
       }
 
     } catch (err) {
@@ -76,9 +87,9 @@ function AddQuiz() {
   //check image
   const [imageError, setImageError] = useState(false);
 
-  console.log(image)
   return (
     <>
+      {contextHolder}
       <Form
         labelCol={{
           span: 8,
