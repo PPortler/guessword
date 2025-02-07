@@ -62,6 +62,7 @@ function Container() {
         setResult(false)
     }
 
+    console.log(questionData)
     return (
         <>
             {result ? (
