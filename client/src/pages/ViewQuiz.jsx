@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { AutoComplete, Flex, Card, List, Image, Typography, Pagination, Row, Col, Popconfirm, message, Button } from 'antd';
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
 
 const { Text } = Typography;
 const mockVal = (str, repeat = 1) => ({
@@ -78,7 +79,9 @@ function ViewQuiz() {
         const minLoadingTime = new Promise((resolve) => setTimeout(resolve, 2000)); // หน่วงเวลา 2 วิ
 
         try {
-            const res = await axios.delete(`${process.env.REACT_APP_PORT_API}/api/quiz/delete_quiz/${deleteItemID}`);
+            const res = await axios.delete(`${process.env.REACT_APP_PORT_API}/api/quiz/delete_quiz/${deleteItemID}`, {
+                withCredentials: true
+            });
 
             if (res.status === 200) {
                 await minLoadingTime; // รอให้ครบ 2 วินาที
@@ -213,9 +216,7 @@ function ViewQuiz() {
 
                     </>
                 ) : (
-                    <Flex justify='center' className='mt-10'>
-                        <Text className='text-white'>กำลังโหลด...</Text>
-                    </Flex>
+                   <Loader/>
                 )}
                 <Pagination align="end" className='mt-5' onChange={changePage} defaultCurrent={1} total={quizData?.length} style={{ color: 'white' }} />
             </Flex>

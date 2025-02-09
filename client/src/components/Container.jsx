@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { Image, Flex, Card, Col, Row, Space, Carousel, Typography, Button } from 'antd';
 import axios from 'axios';
-
+import Loader from './Loader';
 
 const { Text } = Typography;
 
@@ -124,7 +124,7 @@ function Container() {
                         </>
                     ) : (
                         <>
-                            <Text className='text-white'>กำลังโหลด...</Text>
+                            <Loader/>
                         </>
                     )}
                 </Space >

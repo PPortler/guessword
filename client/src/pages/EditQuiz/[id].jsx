@@ -1,15 +1,32 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { Button, Flex, Form, Input, Typography, Checkbox, Image, message } from 'antd';
+import { Button, Flex, Form, Input, Typography, Checkbox, Image, message, Alert, Spin } from 'antd';
 import { PlusCircleFilled, LeftSquareFilled } from '@ant-design/icons'
 import axios from 'axios';
 import { useParams } from 'react-router-dom';  // นำเข้า useParams
 import { useNavigate } from 'react-router-dom';
+import useAuthCheck from '../../hooks/useAuthCheck';
+import NotLogin from '../../components/NotLogin';
+import Loader from '../../components/Loader';
 
 const { Text } = Typography;
 
 function EditQuiz() {
     const navigate = useNavigate();
+
+    //authentication
+    const user = useAuthCheck();
+    const [isLogin, setIsLogin] = useState(null)
+    useEffect(() => {
+        if (user === null) {
+            setIsLogin(null);
+        } else if (user) {
+            setIsLogin(true);
+        } else {
+            setIsLogin(false);
+        }
+    }, [user])
+
 
     const { id } = useParams();
 
@@ -90,7 +107,9 @@ function EditQuiz() {
         }
 
         try {
-            const res = await axios.put(`${process.env.REACT_APP_PORT_API}/api/quiz/update_quiz/${id}`, body)
+            const res = await axios.put(`${process.env.REACT_APP_PORT_API}/api/quiz/update_quiz/${id}`, body, {
+                withCredentials: true
+            })
 
             if (res.status === 200) {
                 console.log("บันทึกคำถามสำเร็จ");
@@ -128,94 +147,138 @@ function EditQuiz() {
     //check image
     const [imageError, setImageError] = useState(false);
 
+    //loader
+    if (isLogin === null) {
+        return (
+            <Loader />
+        );
+    }
+
     return (
         <>
             {contextHolder}
-            <Form
-                labelCol={{
-                    span: 8,
-                }}
-                wrapperCol={{
-                    span: 16,
-                }}
+            {isLogin ? (
+                <Form
+                    labelCol={{
+                        span: 8,
+                    }}
+                    wrapperCol={{
+                        span: 16,
+                    }}
 
-                initialValues={{
-                    remember: true,
-                }}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
-                autoComplete="off"
-                className='max-w-96 mx-auto py-14'
-            >
-                <Flex gap={10} onClick={() => navigate('/view-quiz')} className='cursor-pointer'>
-                    <LeftSquareFilled className='text-white text-xl' />
-                    <Text className='text-white'>ย้อนกลับ</Text>
-                </Flex>
-                {questionData?._id ? (
-                    <>
-                        <Flex justify='end' className='mb-5'>
-                            <Text className='text-white text-xl '>แก้ไข</Text>
-                        </Flex>
-                        <Form.Item
-                            label={
-                                <span className='text-white'>ตั้งคำถาม <span className='text-red-400'>*</span></span>
-                            }
-
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'กรุณาระบุคำถาม',
-                                },
-                            ]}
-                        >
-                            <Input
-                                defaultValue={`${questionData?.title}`}
-                                placeholder="ลองทายภาพนี้ดูสิ ? ..."
-                                style={{ background: 'transparent' }}
-                                className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8'
-                                onChange={(e) => setTitle(e.target.value)}
-                                required={true}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            label={
-                                <span className='text-white'>รูปภาพ <span className='text-red-400'>*</span></span>
-                            }
-
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'กรุณาระบุคำถาม',
-                                },
-                            ]}
-                        >
-                            <Input
-                                defaultValue={`${questionData?.image}`}
-                                placeholder="เป็น link"
-                                style={{ background: 'transparent' }}
-                                className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8'
-                                onChange={(e) => {
-                                    setImage(e.target.value)
-                                    setImageError(false)
-                                }}
-                                required={true}
-                            />
-                            {image || questionData?.image && (
-                                <Image
-                                    width={200}
-                                    height={200}
-                                    onError={() => setImageError(true)}
-                                    onLoad={() => setImageError(false)}
-                                    src={`${image || questionData?.image}`}
-                                    className='mt-3'
-                                />
-                            )}
-                        </Form.Item>
-
-                        {choices.map((choice, index) => (
+                    initialValues={{
+                        remember: true,
+                    }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                    className='max-w-96 mx-auto py-14'
+                >
+                    <Flex gap={10} onClick={() => navigate('/view-quiz')} className='cursor-pointer'>
+                        <LeftSquareFilled className='text-white text-xl' />
+                        <Text className='text-white'>ย้อนกลับ</Text>
+                    </Flex>
+                    {questionData?._id && (
+                        <>
+                            <Flex justify='end' className='mb-5'>
+                                <Text className='text-white text-xl '>แก้ไข</Text>
+                            </Flex>
                             <Form.Item
                                 label={
-                                    <span className='text-white'>ตัวเลือก {index + 1} <span className='text-red-400'>*</span></span>
+                                    <span className='text-white'>ตั้งคำถาม <span className='text-red-400'>*</span></span>
+                                }
+
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุคำถาม',
+                                    },
+                                ]}
+                            >
+                                <Input
+                                    defaultValue={`${questionData?.title}`}
+                                    placeholder="ลองทายภาพนี้ดูสิ ? ..."
+                                    style={{ background: 'transparent' }}
+                                    className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8'
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    required={true}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                label={
+                                    <span className='text-white'>รูปภาพ <span className='text-red-400'>*</span></span>
+                                }
+
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุคำถาม',
+                                    },
+                                ]}
+                            >
+                                <Input
+                                    defaultValue={`${questionData?.image}`}
+                                    placeholder="เป็น link"
+                                    style={{ background: 'transparent' }}
+                                    className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8'
+                                    onChange={(e) => {
+                                        setImage(e.target.value)
+                                        setImageError(false)
+                                    }}
+                                    required={true}
+                                />
+                                {image || questionData?.image && (
+                                    <Image
+                                        width={200}
+                                        height={200}
+                                        onError={() => setImageError(true)}
+                                        onLoad={() => setImageError(false)}
+                                        src={`${image || questionData?.image}`}
+                                        className='mt-3'
+                                    />
+                                )}
+                            </Form.Item>
+
+                            {choices.map((choice, index) => (
+                                <Form.Item
+                                    label={
+                                        <span className='text-white'>ตัวเลือก {index + 1} <span className='text-red-400'>*</span></span>
+                                    }
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'กรุณาระบุคำถาม',
+                                        },
+                                    ]}
+                                    key={index}
+                                >
+                                    <Input
+                                        defaultValue={choice?.choice}
+                                        placeholder="คำตอบ.."
+                                        style={{ background: 'transparent' }}
+                                        className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8'
+                                        onChange={(e) => onChangeChoice(index, 'choice', e.target.value)}
+                                        required={true}
+                                    />
+                                    <Checkbox
+                                        className='mt-2 text-white'
+                                        onChange={(e) => onChangeChoice(index, 'answer', e.target.checked)}
+                                        checked={choice?.answer}>
+                                        คำตอบที่ถูก
+                                    </Checkbox>
+                                    <PlusCircleFilled
+                                        style={{ display: quantityChoice !== index + 1 || index === 3 ? 'none' : 'block' }}
+                                        onClick={handleAddChoice}
+                                        className='text-sky-500 text-2xl cursor-pointer flex justify-center'
+                                    />
+                                </Form.Item>
+
+                            ))}
+
+
+                            <Form.Item
+                                label={
+                                    <span className='text-white'>ผู้เขียน</span>
                                 }
                                 rules={[
                                     {
@@ -223,68 +286,31 @@ function EditQuiz() {
                                         message: 'กรุณาระบุคำถาม',
                                     },
                                 ]}
-                                key={index}
+                                onChange={(e) => setAuthor(e.target.value)}
                             >
                                 <Input
-                                    defaultValue={choice?.choice}
-                                    placeholder="คำตอบ.."
+                                    defaultValue={questionData?.author}
+                                    placeholder="ลองทายภาพนี้ดูสิ ? ..."
                                     style={{ background: 'transparent' }}
-                                    className='bg-transparent text-white placeholder:text-gray-500 rounded-none  border-l-2 border-b-8'
-                                    onChange={(e) => onChangeChoice(index, 'choice', e.target.value)}
-                                    required={true}
-                                />
-                                <Checkbox
-                                    className='mt-2 text-white'
-                                    onChange={(e) => onChangeChoice(index, 'answer', e.target.checked)}
-                                    checked={choice?.answer}>
-                                    คำตอบที่ถูก
-                                </Checkbox>
-                                <PlusCircleFilled
-                                    style={{ display: quantityChoice !== index + 1 || index === 3 ? 'none' : 'block' }}
-                                    onClick={handleAddChoice}
-                                    className='text-sky-500 text-2xl cursor-pointer flex justify-center'
+                                    className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8'
                                 />
                             </Form.Item>
-
-                        ))}
-
-
-                        <Form.Item
-                            label={
-                                <span className='text-white'>ผู้เขียน</span>
-                            }
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'กรุณาระบุคำถาม',
-                                },
-                            ]}
-                            onChange={(e) => setAuthor(e.target.value)}
-                        >
-                            <Input
-                                defaultValue={questionData?.author}
-                                placeholder="ลองทายภาพนี้ดูสิ ? ..."
-                                style={{ background: 'transparent' }}
-                                className='bg-transparent text-white placeholder:text-gray-500 rounded-none border-r-none border-l-2 border-t-none border-b-8'
-                            />
-                        </Form.Item>
-                        {error && (
-                            <Flex justify='end'>
-                                <Text className='text-red-400 text-xs '>* {error}</Text>
-                            </Flex>
-                        )}
-                        <Form.Item label={null} className='text-end mt-3'>
-                            <Button type="primary" htmlType="submit">
-                                ยืนยัน
-                            </Button>
-                        </Form.Item>
-                    </>
-                ) : (
-                    <Flex justify='center'>
-                        <Text className='text-white '>กำลังโหลด...</Text>
-                    </Flex>
-                )}
-            </Form>
+                            {error && (
+                                <Flex justify='end'>
+                                    <Text className='text-red-400 text-xs '>* {error}</Text>
+                                </Flex>
+                            )}
+                            <Form.Item label={null} className='text-end mt-3'>
+                                <Button type="primary" htmlType="submit">
+                                    ยืนยัน
+                                </Button>
+                            </Form.Item>
+                        </>
+                    )}
+                </Form>
+            ) : (
+                <NotLogin />
+            )}
         </>
     )
 }

@@ -19,7 +19,9 @@ app.use(cookieParser())
 //api
 const quizApi = require('./routes/quiz.route')
 const userApi = require('./routes/user.route')
+const authUser = require('./routes/auth_user')
 
+app.use('/auth', authUser)
 app.use('/api/quiz', quizApi)
 app.use('/api/user', userApi)
 

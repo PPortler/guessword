@@ -1,11 +1,56 @@
-import React from 'react'
-import { Button, Flex, Row, Col, Typography } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Button, Flex, Avatar, Dropdown, Menu } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-
-const { Title } = Typography;
+import useAuthCheck from '../hooks/useAuthCheck';
+import axios from 'axios';
 
 function Navbar() {
     const navigate = useNavigate();
+
+    //authentication
+    const user = useAuthCheck();
+    const [isLogin, setIsLogin] = useState(null)
+    useEffect(() => {
+        if (user === null) {
+            setIsLogin(null)
+        } else if (user) {
+            setIsLogin(true)
+        } else {
+            setIsLogin(false)
+        }
+    }, [user])
+
+    //menu profile
+    const menu = (
+        <Menu>
+            {isLogin ? (
+                <Menu.Item key="1" onClick={() => logout()}>
+                    ออกจากระบบ
+                </Menu.Item>
+            ) : (
+                <Menu.Item key="1" onClick={() => navigate('/sign-in')}>
+                    เข้าสู่ระบบ
+                </Menu.Item>
+            )}
+        </Menu>
+    );
+
+    const logout = async () => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_PORT_API}/auth/logout`, {
+                withCredentials: true
+            })
+
+            if (res.status === 200) {
+                setIsLogin(false);
+            }
+        } catch (err) {
+            console.log(err)
+        }
+
+    }
+
 
     return (
         <Flex
@@ -14,11 +59,12 @@ function Navbar() {
             wrap={true}
             className='px-14 py-3 shadow-sm '
         >
-            <Flex>
-                <Button type="ghost" className='text-white' onClick={() => navigate("/")}>Guess Word</Button>
-            </Flex>
+
+            <Button type="ghost" className='text-white' onClick={() => navigate("/")}>GuessWord DooMai</Button>
+
             <Flex
                 gap='small'
+                align='center'
             >
                 <Button type='ghost' className='text-[#9BC2B2] font-bold text-xl' onClick={() => {
                     navigate("/")
@@ -28,7 +74,13 @@ function Navbar() {
                 </Button>
                 <Button onClick={() => navigate("/add-quiz")}>เพิ่มคำถาม</Button>
                 <Button onClick={() => navigate("/view-quiz")}>คำถามทั้งหมด</Button>
-                <Button type='none' className='text-white' onClick={() => navigate("/sign-in")}>เข้าสู่ระบบ</Button>
+                <Dropdown overlay={menu} trigger={['click']}>
+                    {isLogin ? (
+                        <Avatar src={<img src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg" alt="avatar" />} />
+                    ) : (
+                        <Avatar icon={<UserOutlined />} />
+                    )}
+                </Dropdown>
             </Flex>
 
         </Flex>

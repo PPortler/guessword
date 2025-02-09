@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Checkbox, Form, Input, Typography, message } from 'antd';
+import { Button, Checkbox, Form, Input, Typography, message, Flex } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -10,10 +10,18 @@ function Register() {
     const navigate = useNavigate();
 
     const [messageApi, contextHolder] = message.useMessage();
+
+    const [error, setError] = useState('')
     //submit
     const onFinish = async (values) => {
 
         if (!values?.first_name || !values?.last_name || !values?.username || !values?.password || !values?.confirm_password) {
+            setError('ระบุข้อมูลให้ครบ')
+            return;
+        }
+
+        if(values?.password !== values?.confirm_password){
+            setError('รหัสผ่านไม่ตรงกัน')
             return;
         }
         const body = {
@@ -25,6 +33,7 @@ function Register() {
         try {
             const res = await axios.post(`${process.env.REACT_APP_PORT_API}/api/user/new_user`, body)
             if (res.status === 201) {
+                setError('')
                 messageApi.open({
                     type: 'success',
                     content: 'ลงทะเบียนสำเร็จ',
@@ -36,12 +45,9 @@ function Register() {
             }
 
         } catch (err) {
-            console.log(err)
-            messageApi.open({
-                type: 'error',
-                content: 'เกิดข้อผิดพลาด !',
-                duration: 2,
-            });
+            if(err.response){
+                setError(err.response.data)
+            }
         }
     };
     const onFinishFailed = (errorInfo) => {
@@ -161,9 +167,12 @@ function Register() {
                         placeholder='ระบุรหัสผ่านซ้ำ'
                     />
                 </Form.Item>
-
-
-                <Form.Item label={null} className='text-end'>
+                {error && (
+                    <Flex justify='end'>
+                        <Text className='text-red-400 text-xs '>* {error}</Text>
+                    </Flex>
+                )}
+                <Form.Item label={null} className='text-end mt-3'>
                     <Button type="none" className='text-blue-500' htmlType="submit"
                         onClick={() => navigate('/sign-in')}>
                         มีบัญชีแล้ว?

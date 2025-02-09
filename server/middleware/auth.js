@@ -7,6 +7,10 @@ const verifyToken = (req, res, next) => {
         return res.status(401).send("A token is required for authentication")
     }
 
+    if (!process.env.TOKEN_KEY) {
+        return res.status(500).send("TOKEN_KEY is not set in the environment variables");
+    }
+
     try{
         const decoded = jwt.verify(token, process.env.TOKEN_KEY)
 

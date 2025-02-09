@@ -38,7 +38,7 @@ userRoute.route("/new_user").post(async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None',  // ป้องกันการโจมตี CSRF
+            sameSite: 'Lax',  // ป้องกันการโจมตี CSRF
             maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
         })
 
@@ -63,9 +63,17 @@ userRoute.route('/sign_in').post(async (req, res) => {
             return res.status(400).send("All input is required")
         }
         const user = await Users.findOne({ username })
-        const comparePassword = await bcrypt.compare(password, user.password)
 
+        if (!user) {
+            return res.status(400).send("User not found");
+        } 
+        
+        const comparePassword = await bcrypt.compare(password, user.password)
+        if(!comparePassword){
+            return res.status(400).send("Invalid password");  // แจ้งว่า password ไม่ถูกต้อง
+        }
         if (user && comparePassword) {
+
             const token = jwt.sign(
                 {
                     user_id: user._id
@@ -79,7 +87,7 @@ userRoute.route('/sign_in').post(async (req, res) => {
             res.cookie("token", token, {
                 httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',  // ป้องกันการโจมตี CSRF
+                sameSite: 'Lax',  // ป้องกันการโจมตี CSRF
                 maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
             })
 
@@ -89,7 +97,6 @@ userRoute.route('/sign_in').post(async (req, res) => {
                 first_name: user.first_name,
                 last_name: user.last_name,
                 username: user.username,
-                token: user.token,
             })
         }
         

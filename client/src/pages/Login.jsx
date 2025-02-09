@@ -1,5 +1,5 @@
-import React from 'react'
-import { Button, Checkbox, Form, Input, Typography, message } from 'antd';
+import React, { useState } from 'react'
+import { Button, Checkbox, Form, Input, Typography, message, Flex } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -11,6 +11,8 @@ function Login() {
 
     //submit
     const [messageApi, contextHolder] = message.useMessage();
+
+    const [error, setError] = useState(false)
     //submit
     const onFinish = async (values) => {
 
@@ -28,14 +30,9 @@ function Login() {
                     withCredentials: true
                 }
             )
-            if(res.status === 409){
-                messageApi.open({
-                    type: 'error',
-                    content: 'ชื่อผู้ใช้ซ้ำ!',
-                    duration: 1,
-                });
-            }
+
             if (res.status === 200) {
+                setError('')
                 messageApi.open({
                     type: 'success',
                     content: 'เข้าสู่ระบบสำเร็จ!',
@@ -46,12 +43,16 @@ function Login() {
                 }, 1500);
             }
         } catch (err) {
-            console.log(err)
+            if (err.response) {
+                setError(err.response.data)
+                return;
+            }
         }
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
+
     return (
         <>
             {contextHolder}
@@ -112,7 +113,11 @@ function Login() {
                         placeholder='ระบุรหัสผ่าน'
                     />
                 </Form.Item>
-
+                {error && (
+                    <Flex justify='end'>
+                        <Text className='text-red-400 text-xs '>* {error}</Text>
+                    </Flex>
+                )}
                 <Form.Item name="remember" valuePropName="checked" label={null}>
                     <Checkbox className='text-white'>จดจำรหัสผ่าน</Checkbox>
                 </Form.Item>
