@@ -26,8 +26,9 @@ function Navbar() {
                 }}>
                     เล่น
                 </Button>
-                <Button onClick={() => navigate("/add_quiz")}>เพิ่มคำถาม</Button>
-                <Button onClick={() => navigate("/view_quiz")}>คำถามทั้งหมด</Button>
+                <Button onClick={() => navigate("/add-quiz")}>เพิ่มคำถาม</Button>
+                <Button onClick={() => navigate("/view-quiz")}>คำถามทั้งหมด</Button>
+                <Button type='none' className='text-white' onClick={() => navigate("/sign-in")}>เข้าสู่ระบบ</Button>
             </Flex>
 
         </Flex>

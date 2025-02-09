@@ -2,17 +2,11 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { Image, Flex, Card, Col, Row, Space, Carousel, Typography, Button } from 'antd';
 import axios from 'axios';
+
+
 const { Text } = Typography;
 
 function Container() {
-    const contentStyle = {
-        margin: 0,
-        height: '500px',
-        color: '#fff',
-        lineHeight: '160px',
-        textAlign: 'center',
-        background: '#364d79',
-    };
 
     useEffect(() => {
         getQuiz();
@@ -62,7 +56,6 @@ function Container() {
         setResult(false)
     }
 
-    console.log(questionData)
     return (
         <>
             {result ? (

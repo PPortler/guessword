@@ -171,7 +171,7 @@ function ViewQuiz() {
                                         <Flex justify='space-between' align='center'>
                                             <Text className='w-32 text-ellipsis overflow-hidden whitespace-nowrap'>{item.title}</Text>
                                             <Flex gap={10} className=''>
-                                                <Text className='text-gray-500 cursor-pointer' onClick={() => navigate(`/update_quiz/${item?._id}`)}><EditFilled /></Text>
+                                                <Text className='text-gray-500 cursor-pointer' onClick={() => navigate(`/update-quiz/${item?._id}`)}><EditFilled /></Text>
 
                                                 <Popconfirm
                                                     title="ลบคำถามนี้?"

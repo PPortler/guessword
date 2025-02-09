@@ -32,7 +32,9 @@ function EditQuiz() {
     const [questionData, setQuestionData] = useState({})
     const getQuiz = async (id) => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_PORT_API}/api/quiz/${id}`);
+            const res = await axios.get(`${process.env.REACT_APP_PORT_API}/api/quiz/${id}`, {
+                withCredentials: true
+            });
 
             if (res.status === 200) {
                 setQuestionData(res.data)
@@ -99,7 +101,7 @@ function EditQuiz() {
                     duration: 1,
                 });
                 setTimeout(() => {
-                    navigate('/view_quiz')
+                    navigate('/view-quiz')
                 }, 1500);
 
             } else {
@@ -145,7 +147,7 @@ function EditQuiz() {
                 autoComplete="off"
                 className='max-w-96 mx-auto py-14'
             >
-                <Flex gap={10} onClick={() => navigate('/view_quiz')} className='cursor-pointer'>
+                <Flex gap={10} onClick={() => navigate('/view-quiz')} className='cursor-pointer'>
                     <LeftSquareFilled className='text-white text-xl' />
                     <Text className='text-white'>ย้อนกลับ</Text>
                 </Flex>
