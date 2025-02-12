@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Flex, Avatar, Dropdown, Menu } from 'antd';
+import { Button, Flex, Avatar, Dropdown, Menu, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import useAuthCheck from '../hooks/useAuthCheck';
 import axios from 'axios';
+
+const { Text } = Typography
 
 function Navbar() {
     const navigate = useNavigate();
@@ -21,13 +23,16 @@ function Navbar() {
         }
     }, [user])
 
+    console.log(user?.first_name)
     //menu profile
     const menu = (
         <Menu>
             {isLogin ? (
-                <Menu.Item key="1" onClick={() => logout()}>
-                    ออกจากระบบ
-                </Menu.Item>
+                <>
+                    <Menu.Item key="1" onClick={() => logout()}>
+                        ออกจากระบบ
+                    </Menu.Item>
+                </>
             ) : (
                 <Menu.Item key="1" onClick={() => navigate('/sign-in')}>
                     เข้าสู่ระบบ
@@ -74,9 +79,12 @@ function Navbar() {
                 </Button>
                 <Button onClick={() => navigate("/add-quiz")}>เพิ่มคำถาม</Button>
                 <Button onClick={() => navigate("/view-quiz")}>คำถามทั้งหมด</Button>
-                <Dropdown overlay={menu} trigger={['click']}>
+                <Dropdown overlay={menu} trigger={['click']} className='cursor-pointer flex items-center'>
                     {isLogin ? (
-                        <Avatar src={<img src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg" alt="avatar" />} />
+                        <Flex align='center ' gap={8}>
+                            <Avatar src={<img src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg" alt="avatar" />} />
+                           <Text className='text-white'>{user?.first_name}  {user?.last_name}</Text>
+                        </Flex>
                     ) : (
                         <Avatar icon={<UserOutlined />} />
                     )}

@@ -12,19 +12,23 @@ function Container() {
         getQuiz();
     }, [])
 
-    const [questionData, setQuestionData] = useState([])
+    const [statusLoaderData, setStatusLoaderData] = useState(null)
+
+    const [questionData, setQuestionData] = useState(null)
     const getQuiz = async () => {
         try {
             const res = await axios.get(`${process.env.REACT_APP_PORT_API}/api/quiz`);
 
             if (res.status === 200) {
                 setQuestionData(res.data)
+                setStatusLoaderData(true)
                 return;
             } else {
                 console.log('เกิดข้อผิดพลาด');
                 return;
             }
         } catch (err) {
+            setStatusLoaderData(false)
             console.log(err)
         }
     }
@@ -78,54 +82,59 @@ function Container() {
                 </>
             ) : (
                 <Space className='flex flex-col mt-24'>
-                    {questionData?.length > 1 ? (
+                    {statusLoaderData === null ? (
                         <>
-                            <Row className='flex flex-col gap-2'>
-                                <Col className='flex flex-col'>
-                                    <Text className='text-white text-lg'>ข้อ {status + 1}.</Text >
-                                    <Text className='text-white'>{questionData[status]?.title} ?</Text>
-                                </Col >
-                                <Image
-                                    width={200}
-                                    height={200}
-                                    src={questionData[status]?.image}
-                                />
-                                <Text className=' text-white flex justify-end'>ผู้เขียน: {questionData[status]?.author ? questionData[status]?.author : 'นิรนาม'}</Text>
-                            </Row >
-                            <Flex justify='center' className=' z-10 mt-14' >
-                                <Flex vertical="vertical" gap={10}>
-                                    <Text className=' text-white flex justify-end'>คะแนน: {score}/{questionData?.length}</Text>
-                                    <Row gutter={16}>
-                                        {questionData[status]?.choices?.map((choice, index) => {
-                                            return (
-                                                <Col className={``} key={index} onClick={() => {
+                            <Loader />
+                        </>
+                    ) : (
+                        statusLoaderData ? (
+                            <>
+                                <Row className='flex flex-col gap-2'>
+                                    <Col className='flex flex-col'>
+                                        <Text className='text-white text-lg'>ข้อ {status + 1}.</Text >
+                                        <Text className='text-white'>{questionData[status]?.title} ?</Text>
+                                    </Col >
+                                    <Image
+                                        width={200}
+                                        height={200}
+                                        src={questionData[status]?.image}
+                                    />
+                                    <Text className=' text-white flex justify-end'>
+                                        ผู้เขียน: {questionData[status]?.author ? questionData[status]?.author : 'นิรนาม'}
+                                    </Text>
+                                </Row >
+                                <Flex justify='center' className=' z-10 mt-14'>
+                                    <Flex vertical="vertical" gap={10}>
+                                        <Text className=' text-white flex justify-end'>
+                                            คะแนน: {score}/{questionData?.length}
+                                        </Text>
+                                        <Row gutter={16}>
+                                            {questionData[status]?.choices?.map((choice, index) => (
+                                                <Col key={index} onClick={() => {
                                                     if (!showAnswer) {
-                                                        selectChoice(choice?.answer)
+                                                        selectChoice(choice?.answer);
                                                     }
                                                 }}>
-                                                    <Card title={
-                                                        <span className={showAnswer && choice?.answer ? 'text-white' : 'text-black'}>
-                                                            ตัวเลือก {index + 1}
-                                                        </span>
-                                                    }
-                                                        className={
-                                                            ` ${showAnswer && choice?.answer ? 'bg-green-700 text-white' : ''}
-                                         w-52 hover:-translate-y-2 hover:shadow-lg cursor-pointer transition-transform`
+                                                    <Card
+                                                        title={
+                                                            <span className={showAnswer && choice?.answer ? 'text-white' : 'text-black'}>
+                                                                ตัวเลือก {index + 1}
+                                                            </span>
                                                         }
+                                                        className={`w-52 hover:-translate-y-2 hover:shadow-lg cursor-pointer transition-transform 
+                                        ${showAnswer && choice?.answer ? 'bg-green-700 text-white' : ''}`}
                                                     >
                                                         {choice?.choice}
                                                     </Card>
                                                 </Col>
-                                            );
-                                        })}
-                                    </Row>
+                                            ))}
+                                        </Row>
+                                    </Flex>
                                 </Flex>
-                            </Flex>
-                        </>
-                    ) : (
-                        <>
-                            <Loader/>
-                        </>
+                            </>
+                        ) : !statusLoaderData && (
+                            <Text className='text-white text-center'>server is falied connect.</Text>
+                        )
                     )}
                 </Space >
             )
