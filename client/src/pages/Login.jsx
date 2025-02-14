@@ -1,13 +1,28 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Checkbox, Form, Input, Typography, message, Flex } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useAuthCheck from '../hooks/useAuthCheck';
+import Loader from '../components/Loader';
 
 const { Text } = Typography
 
 function Login() {
 
+    //route
     const navigate = useNavigate();
+
+    //loader
+    const [isLoader, setIsLoader] = useState(null)
+    //authentication
+    const user = useAuthCheck();
+    useEffect(() => {
+        if (user) {
+            navigate('/')
+        } else {
+            setIsLoader(false)
+        }
+    }, [user])
 
     //submit
     const [messageApi, contextHolder] = message.useMessage();
@@ -15,8 +30,9 @@ function Login() {
     const [error, setError] = useState(false)
     //submit
     const onFinish = async (values) => {
-
+        setIsLoader(true)
         if (!values?.username || !values?.password) {
+            setIsLoader(false);
             return;
         }
         const body = {
@@ -33,11 +49,6 @@ function Login() {
 
             if (res.status === 200) {
                 setError('')
-                messageApi.open({
-                    type: 'success',
-                    content: 'เข้าสู่ระบบสำเร็จ!',
-                    duration: 1,
-                });
                 setTimeout(() => {
                     navigate('/')
                 }, 1500);
@@ -45,11 +56,13 @@ function Login() {
         } catch (err) {
             if (err.response) {
                 setError(err.response.data)
+                setIsLoader(false);
                 return;
             }
         }
     };
     const onFinishFailed = (errorInfo) => {
+        setIsLoader(false);
         console.log('Failed:', errorInfo);
     };
 
@@ -133,6 +146,9 @@ function Login() {
                     </Button>
                 </Form.Item>
             </Form>
+            {isLoader && (
+                <Loader />
+            )}
         </>
     )
 }

@@ -23,7 +23,6 @@ function Navbar() {
         }
     }, [user])
 
-    console.log(user?.first_name)
     //menu profile
     const menu = (
         <Menu>

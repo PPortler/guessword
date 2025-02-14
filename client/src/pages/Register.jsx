@@ -1,27 +1,45 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Checkbox, Form, Input, Typography, message, Flex } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useAuthCheck from '../hooks/useAuthCheck';
+import Loader from '../components/Loader';
 
 const { Text } = Typography
 
 function Register() {
 
+    //route
     const navigate = useNavigate();
+
+    //loader
+    const [isLoader, setIsLoader] = useState(null)
+    //authentication
+    const user = useAuthCheck();
+    useEffect(() => {
+        if (user) {
+            navigate('/')
+        } else {
+            setIsLoader(false)
+        }
+    }, [user])
 
     const [messageApi, contextHolder] = message.useMessage();
 
     const [error, setError] = useState('')
     //submit
     const onFinish = async (values) => {
+        setIsLoader(true);
 
         if (!values?.first_name || !values?.last_name || !values?.username || !values?.password || !values?.confirm_password) {
             setError('ระบุข้อมูลให้ครบ')
+            setIsLoader(false);
             return;
         }
 
-        if(values?.password !== values?.confirm_password){
+        if (values?.password !== values?.confirm_password) {
             setError('รหัสผ่านไม่ตรงกัน')
+            setIsLoader(false);
             return;
         }
         const body = {
@@ -34,23 +52,20 @@ function Register() {
             const res = await axios.post(`${process.env.REACT_APP_PORT_API}/api/user/new_user`, body)
             if (res.status === 201) {
                 setError('')
-                messageApi.open({
-                    type: 'success',
-                    content: 'ลงทะเบียนสำเร็จ',
-                    duration: 1,
-                });
                 setTimeout(() => {
                     navigate('/')
                 }, 1500);
             }
 
         } catch (err) {
-            if(err.response){
+            if (err.response) {
                 setError(err.response.data)
+                setIsLoader(false);
             }
         }
     };
     const onFinishFailed = (errorInfo) => {
+        setIsLoader(false);
         console.log('Failed:', errorInfo);
     };
     return (
@@ -182,6 +197,9 @@ function Register() {
                     </Button>
                 </Form.Item>
             </Form>
+            {isLoader && (
+                <Loader/>
+            )}
         </>
     )
 }
