@@ -38,7 +38,7 @@ userRoute.route("/new_user").post(async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Lax',  // ป้องกันการโจมตี CSRF
+            sameSite: 'None',  // ป้องกันการโจมตี CSRF
             maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
         })
 
@@ -87,7 +87,7 @@ userRoute.route('/sign_in').post(async (req, res) => {
             res.cookie("token", token, {
                 httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Lax',  // ป้องกันการโจมตี CSRF
+                sameSite: 'None',  // ป้องกันการโจมตี CSRF
                 maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
             })
 
