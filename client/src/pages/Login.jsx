@@ -42,9 +42,6 @@ function Login() {
         try {
             const res = await axios.post(`${process.env.REACT_APP_PORT_API}/api/user/sign_in`,
                 body,
-                {
-                    withCredentials: true
-                }
             )
 
             if (res.status === 200) {

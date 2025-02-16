@@ -35,12 +35,12 @@ userRoute.route("/new_user").post(async (req, res) => {
             }
         )
 
-        res.cookie('token', token, {
-            httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None',  // ป้องกันการโจมตี CSRF
-            maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
-        })
+        // res.cookie('token', token, {
+        //     httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
+        //     secure: process.env.NODE_ENV === 'production',
+        //     sameSite: 'None',  // ป้องกันการโจมตี CSRF
+        //     maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
+        // })
 
         user.token = token
         return res.status(201).json({
@@ -48,6 +48,7 @@ userRoute.route("/new_user").post(async (req, res) => {
             first_name: user.first_name,
             last_name: user.last_name,
             username: user.username,
+            token
         })
 
     } catch (err) {
@@ -84,13 +85,13 @@ userRoute.route('/sign_in').post(async (req, res) => {
                 }
             )
 
-            res.cookie("token", token, {
-                httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',  // ป้องกันการโจมตี CSRF
-                partitioned: true,  // ✅ ใช้ partitioned เพื่อรองรับ Chrome ใหม่
-                maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
-            })
+            // res.cookie("token", token, {
+            //     httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
+            //     secure: process.env.NODE_ENV === 'production',
+            //     sameSite: 'None',  // ป้องกันการโจมตี CSRF
+            //     partitioned: true,  // ✅ ใช้ partitioned เพื่อรองรับ Chrome ใหม่
+            //     maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
+            // })
 
             user.token = token
             return res.status(200).json({

@@ -80,7 +80,10 @@ function ViewQuiz() {
 
         try {
             const res = await axios.delete(`${process.env.REACT_APP_PORT_API}/api/quiz/delete_quiz/${deleteItemID}`, {
-                withCredentials: true
+                withCredentials: true, // ✅ ให้ Axios ส่ง Cookie ไปด้วย
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}` // ✅ หรือใช้ Token จาก localStorage
+                }
             });
 
             if (res.status === 200) {
@@ -216,7 +219,7 @@ function ViewQuiz() {
 
                     </>
                 ) : (
-                   <Loader/>
+                    <Loader />
                 )}
                 <Pagination align="end" className='mt-5' onChange={changePage} defaultCurrent={1} total={quizData?.length} style={{ color: 'white' }} />
             </Flex>

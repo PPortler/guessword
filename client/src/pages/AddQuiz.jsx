@@ -84,7 +84,10 @@ function AddQuiz() {
 
     try {
       const res = await axios.post(`${process.env.REACT_APP_PORT_API}/api/quiz/add_quiz`, body, {
-        withCredentials: true
+        withCredentials: true, // ✅ ให้ Axios ส่ง Cookie ไปด้วย
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}` // ✅ หรือใช้ Token จาก localStorage
+        }
       })
 
       if (res.status === 201) {

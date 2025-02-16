@@ -50,7 +50,10 @@ function EditQuiz() {
     const getQuiz = async (id) => {
         try {
             const res = await axios.get(`${process.env.REACT_APP_PORT_API}/api/quiz/${id}`, {
-                withCredentials: true
+                withCredentials: true, // ✅ ให้ Axios ส่ง Cookie ไปด้วย
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}` // ✅ หรือใช้ Token จาก localStorage
+                }
             });
 
             if (res.status === 200) {

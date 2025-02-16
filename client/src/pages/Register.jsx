@@ -52,6 +52,7 @@ function Register() {
             const res = await axios.post(`${process.env.REACT_APP_PORT_API}/api/user/new_user`, body)
             if (res.status === 201) {
                 setError('')
+                localStorage.setItem("token", res.data.token); // ✅ เก็บ Token
                 setTimeout(() => {
                     navigate('/')
                 }, 1500);
@@ -188,7 +189,7 @@ function Register() {
                     </Flex>
                 )}
                 <Form.Item label={null} className='text-end mt-3'>
-                    <Button type="none" className='text-blue-500' htmlType="submit"
+                    <Button type="none" className='text-blue-500'
                         onClick={() => navigate('/sign-in')}>
                         มีบัญชีแล้ว?
                     </Button>
