@@ -26,6 +26,7 @@ appRoute.route('/logout').get(auth, async (req, res) => {
         httpOnly: true,  // ป้องกันไม่ให้เข้าถึงจาก JavaScript
         secure: process.env.NODE_ENV === 'production',  // ใช้ HTTPS เมื่อใน production
         sameSite: 'None',  // ข้ามโดเมนได้
+        path: '/',  // ให้ลบจากทุก Path
     });
 
     return res.status(200).json({ message: 'Logged out successfully' });
