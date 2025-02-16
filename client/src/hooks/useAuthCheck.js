@@ -8,9 +8,13 @@ const useAuthCheck = () => {
 
     useEffect(() => {
         const checkAuth = async () => {
+            const token = localStorage.getItem("token");
+
             try {
                 const res = await axios.get(`${process.env.REACT_APP_PORT_API}/auth`, {
-                    withCredentials: true
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 })
 
                 if (res.status === 200 && res.data.authenticated) {
@@ -19,7 +23,7 @@ const useAuthCheck = () => {
                     setUser(null);
                     navigate("/sign-in");
                 }
-            }catch(err){
+            } catch (err) {
                 setUser(false);
                 console.log(err)
             }

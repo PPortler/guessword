@@ -43,11 +43,12 @@ function Navbar() {
     const logout = async () => {
         try {
             const res = await axios.get(`${process.env.REACT_APP_PORT_API}/auth/logout`, {
-                withCredentials: true
             })
 
             if (res.status === 200) {
-                setIsLogin(false);
+                localStorage.removeItem("token");  // ✅ ลบ JWT ออกจาก localStorage
+                setIsLogin(false);  // อัปเดตสถานะเป็นออกจากระบบ
+                console.log("Logged out successfully");
             }
         } catch (err) {
             console.log(err)
@@ -82,7 +83,7 @@ function Navbar() {
                     {isLogin ? (
                         <Flex align='center ' gap={8}>
                             <Avatar src={<img src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg" alt="avatar" />} />
-                           <Text className='text-white'>{user?.first_name}  {user?.last_name}</Text>
+                            <Text className='text-white'>{user?.first_name}  {user?.last_name}</Text>
                         </Flex>
                     ) : (
                         <Avatar icon={<UserOutlined />} />

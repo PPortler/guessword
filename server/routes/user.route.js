@@ -98,6 +98,7 @@ userRoute.route('/sign_in').post(async (req, res) => {
                 first_name: user.first_name,
                 last_name: user.last_name,
                 username: user.username,
+                token
             })
         }
         

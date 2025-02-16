@@ -49,6 +49,7 @@ function Login() {
 
             if (res.status === 200) {
                 setError('')
+                localStorage.setItem("token", res.data.token); // ✅ เก็บ Token
                 setTimeout(() => {
                     navigate('/')
                 }, 1500);
