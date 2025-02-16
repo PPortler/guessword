@@ -27,6 +27,7 @@ appRoute.route('/logout').get(async (req, res) => {
         secure: process.env.NODE_ENV === 'production', // ใช้ secure cookie เฉพาะใน production
         sameSite: 'None',    // ข้ามโดเมนได้
         path: '/',           // ลบจากทุก path
+        partitioned: true  // ✅ ใช้ partitioned เพื่อรองรับ Chrome ใหม่
     });
 
     return res.status(200).json({ message: 'Logged out successfully' });

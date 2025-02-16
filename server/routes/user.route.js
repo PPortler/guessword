@@ -88,6 +88,7 @@ userRoute.route('/sign_in').post(async (req, res) => {
                 httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',  // ป้องกันการโจมตี CSRF
+                partitioned: true,  // ✅ ใช้ partitioned เพื่อรองรับ Chrome ใหม่
                 maxAge: 2 * 60 * 60 * 1000  // ตั้งเวลาให้หมดอายุใน 2 ชั่วโมง
             })
 
