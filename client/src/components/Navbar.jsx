@@ -42,7 +42,7 @@ function Navbar() {
 
     const logout = async () => {
         try {
-            const res = await axios.post(`${process.env.REACT_APP_PORT_API}/auth/logout`, {
+            const res = await axios.get(`${process.env.REACT_APP_PORT_API}/auth/logout`, {
                 withCredentials: true
             })
 
