@@ -20,24 +20,17 @@ appRoute.route('/').get(auth, async (req, res) => {
 
 })
 
-
-appRoute.route('/logout').get(auth, async (req, res) => {
-    res.cookie('token', '', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None',
-        path: '/',
-        expires: new Date(0)  // หมดอายุทันที
+appRoute.route('/logout').post(async (req, res) => {
+    // ลบ cookie ที่เก็บ JWT token
+    res.clearCookie('token', {
+        httpOnly: true,      // ไม่ให้ JavaScript เข้าถึง cookie นี้
+        secure: process.env.NODE_ENV === 'production', // ใช้ secure cookie เฉพาะใน production
+        sameSite: 'None',    // ข้ามโดเมนได้
+        path: '/',           // ลบจากทุก path
     });
-
-    // res.clearCookie('token', {
-    //     httpOnly: true,  // ป้องกันไม่ให้เข้าถึงจาก JavaScript
-    //     secure: true,  // ใช้ HTTPS เมื่อใน production
-    //     sameSite: 'None',  // ข้ามโดเมนได้
-    //     path: '/',  // ให้ลบจากทุก Path
-    // });
 
     return res.status(200).json({ message: 'Logged out successfully' });
 });
+
 
 module.exports = appRoute
