@@ -22,12 +22,20 @@ appRoute.route('/').get(auth, async (req, res) => {
 
 
 appRoute.route('/logout').get(auth, async (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: true,  // ป้องกันไม่ให้เข้าถึงจาก JavaScript
-        secure: true,  // ใช้ HTTPS เมื่อใน production
-        sameSite: 'None',  // ข้ามโดเมนได้
-        path: '/',  // ให้ลบจากทุก Path
+    res.cookie('token', '', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+        path: '/',
+        expires: new Date(0)  // หมดอายุทันที
     });
+
+    // res.clearCookie('token', {
+    //     httpOnly: true,  // ป้องกันไม่ให้เข้าถึงจาก JavaScript
+    //     secure: true,  // ใช้ HTTPS เมื่อใน production
+    //     sameSite: 'None',  // ข้ามโดเมนได้
+    //     path: '/',  // ให้ลบจากทุก Path
+    // });
 
     return res.status(200).json({ message: 'Logged out successfully' });
 });
